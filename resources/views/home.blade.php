@@ -152,14 +152,14 @@
                 <div class="col-md-4 col-sm-12 mb-3">
                     <label for="marketcap" class="font-weight-bold mt-md-4">Market Cap</label>
                     <div>
+                         <input type="radio" id="risky" name="marketcap" value="risky" >
+                        <label for="risky">Risky</label><br>
                         <input type="radio" id="small" name="marketcap" value="small">
                         <label for="small">Small</label><br>
                         <input type="radio" id="medium" name="marketcap" value="medium">
                         <label for="medium">Medium</label><br>
                         <input type="radio" id="large" name="marketcap" value="large" checked>
                         <label for="large">Large</label>
-                        <input type="radio" id="risky" name="marketcap" value="risky" >
-                        <label for="large">Risky</label>
                     </div>
                 </div>
             </div>
@@ -203,12 +203,12 @@
                 </div>
 
                 <!-- Total Current Value Card -->
-                <div class="col-md-2 col-sm-5 mb-2">
+                <div class="col-md-3 col-sm-6 mb-3">
                     <div class="card" style="background-color: #ffccbc; border-radius: 10px;">
                         <div class="card-body">
-                        <h8 class="card-title font-weight-bold">PL Value: <span id="plAmount" class="font-weight-bold" style="font-size:20px;"></span>
-                        <span type="hidden" id="totalPLAmount" class="font-weight-bold" style="font-size:20px;">{{ $pl_amount }}</span></h8><br>
-                        
+                        <h8 class="card-title font-weight-bold">PL Value: <span id="plAmount" class="font-weight-bold" style="font-size:20px;"></span><br>
+                        <!-- <span type="hidden" id="totalPLAmount" class="font-weight-bold" style="font-size:20px;">{{ $pl_amount }}</span></h8><br>
+                         -->
                         <h8 class="card-title font-weight-bold">PL Perc:<span id="total_pl_percent" class="font-weight-bold" style="font-size:20px;"></span> </h8>
                                 
                         </div>
@@ -226,7 +226,7 @@
                 </div>
 
                 <!-- XIRR Returns Card -->
-                <div class="col-md-3 col-sm-6 mb-3">
+                <div class="col-md-2 col-sm-5 mb-2">
                     <div class="card" style="background-color: #f8bbd0; border-radius: 10px; height:101px;" >
                         <div class="card-body" >
                             <h7 class="card-title font-weight-bold">XIRR Returns:</h7>
@@ -243,26 +243,33 @@
 
                 <!-- Market Cap Radio Buttons -->
                 <div class="col-md-6 market-cap-container" style="margin-left: 80px;">
-                    <label for="marketcap" class="market-cap-label" style="margin-left: 50px;">Market Cap</label>
-                    <div class="radio-group">
-                    <div class="radio-container">
-                            <input type="radio" id="risky" name="marketcaps" value="risky">
-                            <label for="risky" class="radio-label">Risky</label>
-                        </div>
-                        <div class="radio-container">
-                            <input type="radio" id="small" name="marketcaps" value="small">
-                            <label for="small" class="radio-label">Small</label>
-                        </div>
-                        <div class="radio-container">
-                            <input type="radio" id="medium" name="marketcaps" value="medium">
-                            <label for="medium" class="radio-label">Medium</label>
-                        </div>
-                        <div class="radio-container">
-                            <input type="radio" id="large" name="marketcaps" value="large" checked="checked">
-                            <label for="large" class="radio-label">Large</label>
-                        </div>
-                    </div>
-                </div>
+    <label for="marketcap" class="market-cap-label" style="margin-left: 50px; font-weight: bold; display: block; margin-bottom: 10px;">
+        Market Cap
+    </label>
+    
+    <div class="radio-group" style="display: flex; gap: 20px; flex-wrap: wrap;">
+        <div class="radio-container" style="display: flex; align-items: center;">
+            <input type="radio" id="risky" name="marketcaps" value="risky" style="margin-right: 5px;">
+            <label for="risky" class="radio-label" style="margin: 0; font-size: 14px;">Risky</label>
+        </div>
+
+        <div class="radio-container" style="display: flex; align-items: center;">
+            <input type="radio" id="small" name="marketcaps" value="small" style="margin-right: 5px;">
+            <label for="small" class="radio-label" style="margin: 0; font-size: 14px;">Small</label>
+        </div>
+
+        <div class="radio-container" style="display: flex; align-items: center;">
+            <input type="radio" id="medium" name="marketcaps" value="medium" style="margin-right: 5px;">
+            <label for="medium" class="radio-label" style="margin: 0; font-size: 14px;">Medium</label>
+        </div>
+
+        <div class="radio-container" style="display: flex; align-items: center;">
+            <input type="radio" id="large" name="marketcaps" value="large" checked="checked" style="margin-right: 5px;">
+            <label for="large" class="radio-label" style="margin: 0; font-size: 14px;">Large</label>
+        </div>
+    </div>
+</div>
+<br>
 
                 <div id="loading" style="display:none;">
     <img src="https://mir-s3-cdn-cf.behance.net/project_modules/hd/b6e0b072897469.5bf6e79950d23.gif" alt="Loading...">
@@ -582,7 +589,7 @@ $('#exit').click(function() {
             $('#loading').hide();
             $('#myModal').hide();
             if (response.status === 'success') {
-                // alert(response.message);
+                // alert(response.message);pl
                 location.reload(); // Reload the page to reflect changes
             } else {
                 alert(response.message);
@@ -596,13 +603,63 @@ $('#exit').click(function() {
 
 // index view based on marketcap
 
-$('input[name="marketcaps"]').change(function() {
+        // $('input[name="marketcaps"]').change(function () {
+
+        // var selectedMarketCap = $(this).val();
+        // $('#loading').show();
+
+
+    //     $.ajax({
+    //         url: '{{ route("filterByMarketCap") }}', // Make sure this route exists
+    //         method: 'GET',
+    //         data: {
+    //             marketcap: selectedMarketCap
+    //         },
+    //         success: function(response) {
+    //             $('#loading').hide();
+
+    //             // Update the part of the page with the new data
+    //             $('#portfolioData').html(response.html);
+                
+    //             // Update the total current value, total investment, and PL amount
+    //             $('#totalCurrentValue').text(response.totalCurrentValue);
+    //             $('#totalInvest1').text(response.totalInvest);
+    //             $('#plAmount').text(response.plAmount);
+    //             $('#totalDayChangeValue').text(response.totalDayChangeValue);
+    //             $('#averageDayChangePercentage').text(response.averageDayChangePercentage + '%');
+    //             $('#total_pl_percent').text(response.total_pl_percent + '%');
+    //             $('#xirrPercentage').text(response.xirrPercentage + '%');
+
+    //             // Ensure values are parsed as floats
+    //             var plAmount = parseFloat(response.plAmount);
+    //             var total_pl_percent = parseFloat(response.total_pl_percent);
+    //             var totalDayChangeValue = parseFloat(response.totalDayChangeValue);
+    //             var averageDayChangePercentage = parseFloat(response.averageDayChangePercentage);
+
+    //             // Apply color based on values
+    //             $('#plAmount').css('color', plAmount > 0 ? 'green' : 'red');
+    //             $('#total_pl_percent').css('color', total_pl_percent > 0 ? 'green' : 'red');
+    //             $('#totalDayChangeValue').css('color', totalDayChangeValue > 0 ? 'green' : 'red');
+    //             $('#averageDayChangePercentage').css('color', averageDayChangePercentage > 0 ? 'green' : 'red');
+    //             $('#xirrPercentage').css('color', xirrPercentage > 0 ? 'green' : 'red');
+
+    //         },
+    //         error: function(xhr) {
+    //             alert('An error occurred: ' + xhr.responseText);
+    //         }
+    //     });
+   //  });
+});
+    </script>
+
+    <script>
+$(document).ready(function () {
+    $('input[name="marketcaps"]').change(function () {
         var selectedMarketCap = $(this).val();
         $('#loading').show();
 
-
         $.ajax({
-            url: '{{ route("filterByMarketCap") }}', // Make sure this route exists
+            url: '{{ route("filterByMarketCap") }}',
             method: 'GET',
             data: {
                 marketcap: selectedMarketCap
@@ -612,8 +669,8 @@ $('input[name="marketcaps"]').change(function() {
 
                 // Update the part of the page with the new data
                 $('#portfolioData').html(response.html);
-                
-                // Update the total current value, total investment, and PL amount
+
+                // Update values
                 $('#totalCurrentValue').text(response.totalCurrentValue);
                 $('#totalInvest1').text(response.totalInvest);
                 $('#plAmount').text(response.plAmount);
@@ -622,27 +679,29 @@ $('input[name="marketcaps"]').change(function() {
                 $('#total_pl_percent').text(response.total_pl_percent + '%');
                 $('#xirrPercentage').text(response.xirrPercentage + '%');
 
-                // Ensure values are parsed as floats
-                var plAmount = parseFloat(response.plAmount);
-                var total_pl_percent = parseFloat(response.total_pl_percent);
-                var totalDayChangeValue = parseFloat(response.totalDayChangeValue);
-                var averageDayChangePercentage = parseFloat(response.averageDayChangePercentage);
+                // Safely parse values
+                var plAmount = parseFloat(response.plAmount) || 0;
+                var total_pl_percent = parseFloat(response.total_pl_percent) || 0;
+                var totalDayChangeValue = parseFloat(response.totalDayChangeValue) || 0;
+                var averageDayChangePercentage = parseFloat(response.averageDayChangePercentage) || 0;
+                var xirrPercentage = parseFloat(response.xirrPercentage) || 0;
 
-                // Apply color based on values
-                $('#plAmount').css('color', plAmount > 0 ? 'green' : 'red');
-                $('#total_pl_percent').css('color', total_pl_percent > 0 ? 'green' : 'red');
-                $('#totalDayChangeValue').css('color', totalDayChangeValue > 0 ? 'green' : 'red');
-                $('#averageDayChangePercentage').css('color', averageDayChangePercentage > 0 ? 'green' : 'red');
-                $('#xirrPercentage').css('color', xirrPercentage > 0 ? 'green' : 'red');
-
+                // Apply color coding
+                $('#plAmount').css('color', plAmount >= 0 ? 'green' : 'red');
+                $('#total_pl_percent').css('color', total_pl_percent >= 0 ? 'green' : 'red');
+                $('#totalDayChangeValue').css('color', totalDayChangeValue >= 0 ? 'green' : 'red');
+                $('#averageDayChangePercentage').css('color', averageDayChangePercentage >= 0 ? 'green' : 'red');
+                $('#xirrPercentage').css('color', xirrPercentage >= 0 ? 'green' : 'red');
             },
             error: function(xhr) {
+                $('#loading').hide();
                 alert('An error occurred: ' + xhr.responseText);
             }
         });
     });
 });
-    </script>
+</script>
+
 
 </body>
 </html>

@@ -6,6 +6,8 @@ use App\Http\Controllers\finance;
 use App\Http\Controllers\XirrController;
 use App\Http\Controllers\CronController;
 use App\Http\Controllers\ScraperController;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Response;
 
 Route::get('/', function () {
     return view('welcome');
@@ -41,5 +43,14 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/pl_report', [finance::class, 'pl_report'])->name('pl_report');
 });
 
+Route::middleware(['auth', 'role:admin'])->get('/download-db', function () {
+    $filePath = 'exports/learn-to-invest&table.sql';
+
+    if (!Storage::exists($filePath)) {
+        abort(404, 'File not found.');
+    }
+
+    return Storage::download($filePath, 'learn-to-invest&table.sql');
+})->name('download.db');
 
 require __DIR__.'/auth.php';
