@@ -17,6 +17,9 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+                 $table->decimal('available_balance', 15, 2)->default(0.00);
+                $table->decimal('XIRR', 5, 2)->default(0.00); // Assuming % up to 99.99
+                $table->string('role')->default('user'); // 'admin' or 'user'
             $table->rememberToken();
             $table->timestamps();
         });
