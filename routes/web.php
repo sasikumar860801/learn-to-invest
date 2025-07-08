@@ -8,19 +8,32 @@ use App\Http\Controllers\CronController;
 use App\Http\Controllers\ScraperController;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Response;
+use App\Http\Controllers\usersController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
+Route::get('/users/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+
+//     Route::get('/pl-report', function () {
+//     return view('pl-report');
+// })->middleware(['auth', 'verified'])->name('pl.report');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+     Route::get('/users/pl-report', [usersController::class, 'pl_report'])->name('pl.report');
+    Route::get('/users/dashboard', [usersController::class, 'dashboard'])->name('dashboard');
+    Route::post('/users/buy-stock', [usersController::class, 'buystock'])->name('buystock');
+        Route::post('/users/exit-stock', [usersController::class, 'exitstock'])->name('users_exitstock');
+
+
 });
 
 Route::middleware(['auth', 'role:admin'])->get('/admin/check', function () {
@@ -33,7 +46,6 @@ Route::middleware(['auth', 'role:admin'])->get('/admin/check', function () {
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/home',[finance::class,'index'])->name('index');
-    Route::get('/search', [finance::class, 'search'])->name('search');
     Route::get('/fetch-chart/{id}', [finance::class, 'fetchChart'])->name('fetch.chart');
     Route::get('/cmp/{id}', [finance::class, 'cmp'])->name('cmp');
     Route::post('/exit-stock', [finance::class, 'exitStock'])->name('exitstock');
@@ -42,6 +54,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/filterByMarketCap', [finance::class, 'filterByMarketCap'])->name('filterByMarketCap');
     Route::get('/pl_report', [finance::class, 'pl_report'])->name('pl_report');
 });
+    Route::get('/search', [finance::class, 'search'])->name('search');
 
 Route::middleware(['auth', 'role:admin'])->get('/download-db', function () {
     $filePath = 'exports/learn-to-invest&table.sql';
