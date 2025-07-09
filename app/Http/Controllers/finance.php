@@ -449,7 +449,7 @@ class finance extends Controller
             }
 
             // Add cash flow from Portfolio
-            $cashFlows[] = -$item->buy_price;
+            $cashFlows[] = -$item->total_price;
             $dates[] = $item->buy_date;
         }
     }
@@ -459,7 +459,8 @@ class finance extends Controller
     $dates[] = date('Y-m-d'); // Today's date
 
     // Add cash flows from PL_Report filtered by Market_cap
-    $plReports = PL_Report::where('Market_cap', $marketCap)->whereIn('stock_id', $stockIds)->get();
+    $plReports = PL_Report::where('Market_cap', $marketCap)->get();
+    // dd($plReports);
     foreach ($plReports as $report) {
         $cashFlows[] = -$report->total_buy_price;
         $dates[] = $report->buy_date;
@@ -467,6 +468,8 @@ class finance extends Controller
         $cashFlows[] = $report->total_sell_price;
         $dates[] = $report->sell_date;
     }
+
+    // dd($cashFlows, $dates);
 
     // Calculate XIRR
     try {
