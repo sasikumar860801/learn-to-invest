@@ -11,7 +11,8 @@ use Carbon\Carbon;
 use RuntimeException;
 use InvalidArgumentException;
 use Illuminate\Support\Facades\Cache;
-
+use DB;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 
 // use Nyholm\EffectiveInterestRate\Xirr;
@@ -49,6 +50,7 @@ class finance extends Controller
 
     public function fetchChart($id)
         {
+          
             $url = "https://www.screener.in/api/company/{$id}/chart/?q=Price-DMA50-DMA200-Volume&days=7&consolidated=true";
 
             $response = Http::get($url);
@@ -246,6 +248,7 @@ class finance extends Controller
 }
         private function fetchLatestPrices($stockIds)
     {
+        // dd($stockIds);
         if (!is_array($stockIds)) {
             $stockIds = [$stockIds];
         }
@@ -264,14 +267,18 @@ class finance extends Controller
                 $results[$id] = null; // Handle the case where the API request fails
             }
         }
+        //   dd($results);
         return $results;
+      
     }
         private function extractLatestPrice($data)
         {
+            // dd($data);
             foreach ($data['datasets'] as $dataset) {
                 if ($dataset['metric'] === 'Price') {
                     // Assuming the last value is the most recent
                     $latestValue = end($dataset['values']);
+                    // dd($latestValue[1]);
                     return $latestValue[1]; // Return the price value
                 }
             }
@@ -556,6 +563,145 @@ private function xirr($cashFlows, $dates, $guess = 0.1)
     }
     
     throw new RuntimeException('XIRR calculation did not converge.');
+}
+public function user_list(Request $request)
+{
+    $users = DB::table('users')
+    ->where('role', 'user')
+    ->select('id', 'name', 'available_balance', 'created_at')->get();
+
+    $finalData = [];
+
+    foreach ($users as $index => $user) {
+        $portfolio = DB::table('users_portfolio')
+            ->where('user_id', $user->id)
+            ->get();
+
+        $totalInvest = 0;
+        $currentValue = 0;
+
+        foreach ($portfolio as $item) {
+            $latestPriceData = Cache::remember("stock_price_{$item->stock_id}", 300, function () use ($item) {
+                return $this->fetchLatestPrices($item->stock_id);
+            });
+
+            $latestPrice = isset($latestPriceData[$item->stock_id])
+                ? (float) $latestPriceData[$item->stock_id]
+                : 0;
+
+            $totalInvest += $item->total_price;
+            $currentValue += $item->quantity * $latestPrice;
+        }
+
+        $availableBalance = $user->available_balance ?? 0;
+        $totalAmount = $availableBalance + $currentValue;
+
+        $finalData[] = [
+            'id' => $user->id,
+            'name' => $user->name,
+            'created_at' => $user->created_at,
+            'available_balance' => number_format($availableBalance, 0),
+            'total_invest' => number_format($totalInvest, 0),
+            'current_value' => number_format($currentValue, 0),
+            'total_amount' => number_format($totalAmount, 0),
+            'total_amount_raw' => $totalAmount // for sorting
+        ];
+    }
+
+    // Sort by total_amount descending
+    $collection = collect($finalData)->sortByDesc('total_amount_raw')->values();
+
+    // Manual pagination
+    $perPage = 10;
+    $currentPage = LengthAwarePaginator::resolveCurrentPage();
+    $pagedData = $collection->slice(($currentPage - 1) * $perPage, $perPage)->all();
+
+    $paginatedData = new LengthAwarePaginator(
+        $pagedData,
+        $collection->count(),
+        $perPage,
+        $currentPage,
+        ['path' => $request->url(), 'query' => $request->query()]
+    );
+
+    return view('user_list', ['data' => $paginatedData]);
+}
+
+public function user_list_detail(Request $request, $id){
+
+      $user_id = $id;
+
+    $users_data = DB::table('users')->where('id', $user_id)->first();
+
+    // Get paginated portfolios (5 per page)
+    $users_portfolio_data = DB::table('users_portfolio')
+        ->where('user_id', $user_id)
+        ->paginate(10);
+
+    foreach ($users_portfolio_data as $item) {
+        $item->latest_price = Cache::remember("stock_price_{$item->stock_id}", 300, function () use ($item) {
+            return $this->fetchLatestPrices($item->stock_id);
+        });
+    }
+
+    // dd($users_portfolio_data, $users_data);
+
+        return view ('user_list_detail',compact('users_data','users_portfolio_data'));
+
+
+}
+
+// public function recent_buy(Request $request){
+
+
+//     $users_portfolio_data = DB::table('users_portfolio')
+//         // ->where('user_id', $user_id)
+//         ->orderBy('id', 'desc')
+//         ->paginate(10);
+
+//     foreach ($users_portfolio_data as $item) {
+//         $item->latest_price = Cache::remember("stock_price_{$item->stock_id}", 300, function () use ($item) {
+//             return $this->fetchLatestPrices($item->stock_id);
+//         });
+//     }
+
+//         return view ('recent_buy',compact('users_portfolio_data'));
+
+// }
+
+public function recent_buy(Request $request)
+{
+    $users_portfolio_data = DB::table('users_portfolio')
+        ->join('users', 'users_portfolio.user_id', '=', 'users.id')
+        ->select(
+            'users_portfolio.*',
+            'users.name as user_name'
+        )
+        ->orderBy('users_portfolio.id', 'desc')
+        ->paginate(10);
+
+    foreach ($users_portfolio_data as $item) {
+        $item->latest_price = Cache::remember("stock_price_{$item->stock_id}", 300, function () use ($item) {
+            return $this->fetchLatestPrices($item->stock_id);
+        });
+    }
+
+
+    return view('recent_buy', compact('users_portfolio_data'));
+}
+
+public function recent_sell(Request $request){
+
+    $data=DB::table('users_pl_reports')
+    ->join('users', 'users_pl_reports.user_id', '=', 'users.id')
+    ->select(
+        'users_pl_reports.*',
+        'users.name as user_name')
+    ->paginate(10);
+
+  
+    return view ('recent_sell',compact('data'));
+    
 }
         
 }

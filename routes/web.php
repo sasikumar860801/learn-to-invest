@@ -46,15 +46,20 @@ Route::middleware(['auth', 'role:admin'])->get('/admin/check', function () {
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/home',[finance::class,'index'])->name('index');
-    Route::get('/fetch-chart/{id}', [finance::class, 'fetchChart'])->name('fetch.chart');
     Route::get('/cmp/{id}', [finance::class, 'cmp'])->name('cmp');
     Route::post('/exit-stock', [finance::class, 'exitStock'])->name('exitstock');
     Route::post('/home', [finance::class, 'store'])->name('store');
     Route::get('/get-market-cap', [ScraperController::class, 'getMarketCap']);
     Route::get('/filterByMarketCap', [finance::class, 'filterByMarketCap'])->name('filterByMarketCap');
     Route::get('/pl_report', [finance::class, 'pl_report'])->name('pl_report');
+    Route::get('/admin/user_list', [finance::class, 'user_list'])->name('user_list');
+    Route::get('/admin/user_list_detail/{id}', [finance::class, 'user_list_detail'])->name('user_list_detail');
+     Route::get('/admin/recent_buy', [finance::class, 'recent_buy'])->name('recent_buy');
+      Route::get('/admin/recent_sell', [finance::class, 'recent_sell'])->name('recent_sell');
 });
     Route::get('/search', [finance::class, 'search'])->name('search');
+        Route::get('/fetch-chart/{id}', [finance::class, 'fetchChart'])->name('fetch.chart');
+
 
 Route::middleware(['auth', 'role:admin'])->get('/download-db', function () {
     $filePath = 'exports/learn-to-invest&table.sql';

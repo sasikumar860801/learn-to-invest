@@ -81,12 +81,24 @@
                 <h3>Menu</h3>
             </div>
             <ul class="list-unstyled components">
-                <li class="active">
+              <li >
                     <a href="home">Home</a>
                 </li>
          
-                <li>
-                    <a href="#plreport">PL Report</a>
+                <li class="active">
+                    <a href="pl_report">PL Report</a>
+                </li>
+
+                  <li>
+                    <a href="admin/user_list">User List</a>
+                </li>
+
+                 <li>
+                    <a href="admin/recent_buy">Recent Buy</a>
+                </li>
+
+                 <li>
+                    <a href="admin/recent_sell">Recent Sell</a>
                 </li>
            
             </ul>

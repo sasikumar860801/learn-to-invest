@@ -24,11 +24,6 @@ class usersController extends Controller
         ->where('user_id', $user_id)
         ->paginate(10);
 
-    // Attach dynamic latest_price to each portfolio item
-    // foreach ($users_portfolio_data as $item) {
-    //     $item->latest_price = $this->fetchLatestPrices($item->stock_id);
-    // }
-
     foreach ($users_portfolio_data as $item) {
         $item->latest_price = Cache::remember("stock_price_{$item->stock_id}", 300, function () use ($item) {
             return $this->fetchLatestPrices($item->stock_id);

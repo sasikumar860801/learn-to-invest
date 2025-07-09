@@ -108,6 +108,18 @@
                 <li>
                     <a href="pl_report">PL Report</a>
                 </li>
+
+                  <li>
+                    <a href="admin/user_list">User List</a>
+                </li>
+
+                 <li>
+                    <a href="admin/recent_buy">Recent Buy</a>
+                </li>
+
+                 <li>
+                    <a href="admin/recent_sell">Recent Sell</a>
+                </li>
              
             </ul>
         </nav>
