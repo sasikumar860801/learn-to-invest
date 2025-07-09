@@ -10,6 +10,7 @@ use App\Services\StockService;
 use Carbon\Carbon;
 use RuntimeException;
 use InvalidArgumentException;
+use Illuminate\Support\Facades\Cache;
 
 
 
@@ -139,11 +140,13 @@ class finance extends Controller
 
         public function index()
         {
+            // dd('test');
             $data = Portfolio::paginate(15); 
         
             $stockIds = $data->pluck('stock_id')->toArray();
-        
+       
             $data2 = $this->cmp($stockIds);
+            // dd($data2);
         
             // Initialize the total current value
             $totalCurrentValue = 0;
@@ -171,37 +174,76 @@ class finance extends Controller
             return view('home', compact('data', 'data2', 'totalinvest', 'totalCurrentValue', 'pl_amount'));
         }
         
+        // public function cmp($ids)
+        // {
+        //     if (!is_array($ids)) {
+        //         $ids = [$ids];
+        //     }
+        
+        //     $results = [];
+        
+        //     foreach ($ids as $id) {
+        //         $url = "https://www.screener.in/api/company/{$id}/chart/?q=Price-DMA50-DMA200-Volume&days=7&consolidated=true";
+        //         $response = Http::get($url);
+        
+        //         if ($response->successful()) {
+        //             $data = $response->json();
+        //             $latestPrice = $this->extractLatestPrice($data);
+        //             $oneDayChange = $this->calculateOneDayChange($data);
+        //             $results[$id] = [
+        //                 'latest_price' => $latestPrice,
+        //                 'one_day_change_value' => $oneDayChange['value'],
+        //                 'one_day_change_percentage' => $oneDayChange['percentage']
+        //             ];
+        //         } else {
+        //             $results[$id] = [
+        //                 'latest_price' => null,
+        //                 'one_day_change_value' => null,
+        //                 'one_day_change_percentage' => null
+        //             ]; // Handle the case where the API request fails
+        //         }
+        //     }
+        //     return $results;
+        // }
+
         public function cmp($ids)
-        {
-            if (!is_array($ids)) {
-                $ids = [$ids];
-            }
-        
-            $results = [];
-        
-            foreach ($ids as $id) {
-                $url = "https://www.screener.in/api/company/{$id}/chart/?q=Price-DMA50-DMA200-Volume&days=7&consolidated=true";
-                $response = Http::get($url);
-        
-                if ($response->successful()) {
-                    $data = $response->json();
-                    $latestPrice = $this->extractLatestPrice($data);
-                    $oneDayChange = $this->calculateOneDayChange($data);
-                    $results[$id] = [
-                        'latest_price' => $latestPrice,
-                        'one_day_change_value' => $oneDayChange['value'],
-                        'one_day_change_percentage' => $oneDayChange['percentage']
-                    ];
-                } else {
-                    $results[$id] = [
-                        'latest_price' => null,
-                        'one_day_change_value' => null,
-                        'one_day_change_percentage' => null
-                    ]; // Handle the case where the API request fails
-                }
-            }
-            return $results;
+{
+    if (!is_array($ids)) {
+        $ids = [$ids];
+    }
+
+    $results = [];
+
+    foreach ($ids as $id) {
+        $cacheKey = "cmp_data_{$id}";
+
+        // Try getting from cache, or fetch and store if not present
+        $data = Cache::remember($cacheKey, now()->addMinutes(5), function () use ($id) {
+            $url = "https://www.screener.in/api/company/{$id}/chart/?q=Price-DMA50-DMA200-Volume&days=7&consolidated=true";
+            $response = Http::get($url);
+
+            return $response->successful() ? $response->json() : null;
+        });
+
+        if ($data) {
+            $latestPrice = $this->extractLatestPrice($data);
+            $oneDayChange = $this->calculateOneDayChange($data);
+            $results[$id] = [
+                'latest_price' => $latestPrice,
+                'one_day_change_value' => $oneDayChange['value'],
+                'one_day_change_percentage' => $oneDayChange['percentage']
+            ];
+        } else {
+            $results[$id] = [
+                'latest_price' => null,
+                'one_day_change_value' => null,
+                'one_day_change_percentage' => null
+            ];
         }
+    }
+
+    return $results;
+}
         private function fetchLatestPrices($stockIds)
     {
         if (!is_array($stockIds)) {

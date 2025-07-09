@@ -152,7 +152,7 @@
                 <div class="col-md-4 col-sm-12 mb-3">
                     <label for="marketcap" class="font-weight-bold mt-md-4">Market Cap</label>
                     <div>
-                         <input type="radio" id="risky" name="marketcap" value="risky" >
+                       <input type="radio" id="risky" name="marketcap" value="risky" >
                         <label for="risky">Risky</label><br>
                         <input type="radio" id="small" name="marketcap" value="small">
                         <label for="small">Small</label><br>
@@ -206,9 +206,9 @@
                 <div class="col-md-3 col-sm-6 mb-3">
                     <div class="card" style="background-color: #ffccbc; border-radius: 10px;">
                         <div class="card-body">
-                        <h8 class="card-title font-weight-bold">PL Value: <span id="plAmount" class="font-weight-bold" style="font-size:20px;"></span><br>
-                        <!-- <span type="hidden" id="totalPLAmount" class="font-weight-bold" style="font-size:20px;">{{ $pl_amount }}</span></h8><br>
-                         -->
+                        <h8 class="card-title font-weight-bold">PL Value: <span id="plAmount" class="font-weight-bold" style="font-size:20px;"></span>
+                        <span type="hidden" id="totalPLAmount" class="font-weight-bold" style="font-size:20px;">{{ '' }}</span></h8><br>
+                        
                         <h8 class="card-title font-weight-bold">PL Perc:<span id="total_pl_percent" class="font-weight-bold" style="font-size:20px;"></span> </h8>
                                 
                         </div>
@@ -216,7 +216,7 @@
                 </div>
 
                 <!-- Day Change Value Card -->
-                <div class="col-md-4 col-sm-6 mb-3">
+                               <div class="col-md-4 col-sm-6 mb-3">
                     <div class="card" style="background-color: #c8e6c9; border-radius: 10px;">
                         <div class="card-body">
                             <h7 class="card-title font-weight-bold">Day Changes Value: <span id="totalDayChangeValue" class="font-weight-bold" style="font-size:20px;"></span></h7><br>
@@ -241,7 +241,7 @@
 </div>
 
 
-                <!-- Market Cap Radio Buttons -->
+                          <!-- Market Cap Radio Buttons -->
                 <div class="col-md-6 market-cap-container" style="margin-left: 80px;">
     <label for="marketcap" class="market-cap-label" style="margin-left: 50px; font-weight: bold; display: block; margin-bottom: 10px;">
         Market Cap
@@ -589,7 +589,6 @@ $('#exit').click(function() {
             $('#loading').hide();
             $('#myModal').hide();
             if (response.status === 'success') {
-                // alert(response.message);pl
                 location.reload(); // Reload the page to reflect changes
             } else {
                 alert(response.message);
@@ -603,63 +602,13 @@ $('#exit').click(function() {
 
 // index view based on marketcap
 
-        // $('input[name="marketcaps"]').change(function () {
-
-        // var selectedMarketCap = $(this).val();
-        // $('#loading').show();
-
-
-    //     $.ajax({
-    //         url: '{{ route("filterByMarketCap") }}', // Make sure this route exists
-    //         method: 'GET',
-    //         data: {
-    //             marketcap: selectedMarketCap
-    //         },
-    //         success: function(response) {
-    //             $('#loading').hide();
-
-    //             // Update the part of the page with the new data
-    //             $('#portfolioData').html(response.html);
-                
-    //             // Update the total current value, total investment, and PL amount
-    //             $('#totalCurrentValue').text(response.totalCurrentValue);
-    //             $('#totalInvest1').text(response.totalInvest);
-    //             $('#plAmount').text(response.plAmount);
-    //             $('#totalDayChangeValue').text(response.totalDayChangeValue);
-    //             $('#averageDayChangePercentage').text(response.averageDayChangePercentage + '%');
-    //             $('#total_pl_percent').text(response.total_pl_percent + '%');
-    //             $('#xirrPercentage').text(response.xirrPercentage + '%');
-
-    //             // Ensure values are parsed as floats
-    //             var plAmount = parseFloat(response.plAmount);
-    //             var total_pl_percent = parseFloat(response.total_pl_percent);
-    //             var totalDayChangeValue = parseFloat(response.totalDayChangeValue);
-    //             var averageDayChangePercentage = parseFloat(response.averageDayChangePercentage);
-
-    //             // Apply color based on values
-    //             $('#plAmount').css('color', plAmount > 0 ? 'green' : 'red');
-    //             $('#total_pl_percent').css('color', total_pl_percent > 0 ? 'green' : 'red');
-    //             $('#totalDayChangeValue').css('color', totalDayChangeValue > 0 ? 'green' : 'red');
-    //             $('#averageDayChangePercentage').css('color', averageDayChangePercentage > 0 ? 'green' : 'red');
-    //             $('#xirrPercentage').css('color', xirrPercentage > 0 ? 'green' : 'red');
-
-    //         },
-    //         error: function(xhr) {
-    //             alert('An error occurred: ' + xhr.responseText);
-    //         }
-    //     });
-   //  });
-});
-    </script>
-
-    <script>
-$(document).ready(function () {
-    $('input[name="marketcaps"]').change(function () {
+$('input[name="marketcaps"]').change(function() {
         var selectedMarketCap = $(this).val();
         $('#loading').show();
 
+
         $.ajax({
-            url: '{{ route("filterByMarketCap") }}',
+            url: '{{ route("filterByMarketCap") }}', // Make sure this route exists
             method: 'GET',
             data: {
                 marketcap: selectedMarketCap
@@ -669,8 +618,8 @@ $(document).ready(function () {
 
                 // Update the part of the page with the new data
                 $('#portfolioData').html(response.html);
-
-                // Update values
+                
+                // Update the total current value, total investment, and PL amount
                 $('#totalCurrentValue').text(response.totalCurrentValue);
                 $('#totalInvest1').text(response.totalInvest);
                 $('#plAmount').text(response.plAmount);
@@ -679,29 +628,27 @@ $(document).ready(function () {
                 $('#total_pl_percent').text(response.total_pl_percent + '%');
                 $('#xirrPercentage').text(response.xirrPercentage + '%');
 
-                // Safely parse values
-                var plAmount = parseFloat(response.plAmount) || 0;
-                var total_pl_percent = parseFloat(response.total_pl_percent) || 0;
-                var totalDayChangeValue = parseFloat(response.totalDayChangeValue) || 0;
-                var averageDayChangePercentage = parseFloat(response.averageDayChangePercentage) || 0;
-                var xirrPercentage = parseFloat(response.xirrPercentage) || 0;
+                // Ensure values are parsed as floats
+                var plAmount = parseFloat(response.plAmount);
+                var total_pl_percent = parseFloat(response.total_pl_percent);
+                var totalDayChangeValue = parseFloat(response.totalDayChangeValue);
+                var averageDayChangePercentage = parseFloat(response.averageDayChangePercentage);
 
-                // Apply color coding
-                $('#plAmount').css('color', plAmount >= 0 ? 'green' : 'red');
-                $('#total_pl_percent').css('color', total_pl_percent >= 0 ? 'green' : 'red');
-                $('#totalDayChangeValue').css('color', totalDayChangeValue >= 0 ? 'green' : 'red');
-                $('#averageDayChangePercentage').css('color', averageDayChangePercentage >= 0 ? 'green' : 'red');
-                $('#xirrPercentage').css('color', xirrPercentage >= 0 ? 'green' : 'red');
+                // Apply color based on values
+                $('#plAmount').css('color', plAmount > 0 ? 'green' : 'red');
+                $('#total_pl_percent').css('color', total_pl_percent > 0 ? 'green' : 'red');
+                $('#totalDayChangeValue').css('color', totalDayChangeValue > 0 ? 'green' : 'red');
+                $('#averageDayChangePercentage').css('color', averageDayChangePercentage > 0 ? 'green' : 'red');
+                $('#xirrPercentage').css('color', xirrPercentage > 0 ? 'green' : 'red');
+
             },
             error: function(xhr) {
-                $('#loading').hide();
                 alert('An error occurred: ' + xhr.responseText);
             }
         });
     });
 });
-</script>
-
+    </script>
 
 </body>
 </html>
