@@ -13,6 +13,7 @@ use InvalidArgumentException;
 use Illuminate\Support\Facades\Cache;
 use DB;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Log;
 
 
 // use Nyholm\EffectiveInterestRate\Xirr;
@@ -69,7 +70,7 @@ class finance extends Controller
         
             // Assuming you have methods to calculate realized PL amount and percentage
             $data->each(function ($item) {
-                $item->realized_pl_amount = $item->total_sell_price - $item->total_buy_price;
+                $item->realized_pl_amount = round($item->total_sell_price - $item->total_buy_price,1);
                 $item->realized_pl_percentage = round(($item->realized_pl_amount / $item->total_buy_price) * 100,1);
             });
         
@@ -564,15 +565,101 @@ private function xirr($cashFlows, $dates, $guess = 0.1)
     
     throw new RuntimeException('XIRR calculation did not converge.');
 }
+// public function user_list(Request $request)
+// {
+//     $users = DB::table('users')
+//     ->where('role', 'user')
+//     ->select('id', 'name', 'available_balance', 'created_at')->get();
+
+//     $finalData = [];
+
+//     foreach ($users as $index => $user) {
+//         $portfolio = DB::table('users_portfolio')
+//             ->where('user_id', $user->id)
+//             ->get();
+
+//         $totalInvest = 0;
+//         $currentValue = 0;
+
+//         foreach ($portfolio as $item) {
+//             $latestPriceData = Cache::remember("stock_price_{$item->stock_id}", 3600, function () use ($item) {
+//                 return $this->fetchLatestPrices($item->stock_id);
+//             });
+
+//             $latestPrice = isset($latestPriceData[$item->stock_id])
+//                 ? (float) $latestPriceData[$item->stock_id]
+//                 : 0;
+
+//             $totalInvest += $item->total_price;
+//             $currentValue += $item->quantity * $latestPrice;
+//         }
+
+// //         foreach ($portfolio as $item) {
+// //     $latestPriceData = $this->fetchLatestPrices($item->stock_id);
+
+// //     $latestPrice = isset($latestPriceData[$item->stock_id])
+// //         ? (float) $latestPriceData[$item->stock_id]
+// //         : 0;
+
+// //     $totalInvest += $item->total_price;
+// //     $currentValue += $item->quantity * $latestPrice;
+// // }
+
+//         $availableBalance = $user->available_balance ?? 0;
+//         $totalAmount = $availableBalance + $currentValue;
+//         $pl_perc= ($totalAmount - 100000) / 100000 * 100;
+
+//         $finalData[] = [
+//             'id' => $user->id,
+//             'name' => $user->name,
+//             'created_at' => $user->created_at,
+//             'available_balance' => number_format($availableBalance, 0),
+//             'total_invest' => number_format($totalInvest, 0),
+//             'current_value' => number_format($currentValue, 0),
+//             'total_amount' => number_format($totalAmount, 0),
+//             'pl_perc' => number_format($pl_perc, 1),
+//             'total_amount_raw' => $totalAmount // for sorting
+//         ];
+//     }
+
+//     // Sort by total_amount descending
+//     $collection = collect($finalData)->sortByDesc('total_amount_raw')->values();
+
+//     // Manual pagination
+//     $perPage = 10;
+//     $currentPage = LengthAwarePaginator::resolveCurrentPage();
+//     $pagedData = $collection->slice(($currentPage - 1) * $perPage, $perPage)->all();
+
+//     $paginatedData = new LengthAwarePaginator(
+//         $pagedData,
+//         $collection->count(),
+//         $perPage,
+//         $currentPage,
+//         ['path' => $request->url(), 'query' => $request->query()]
+//     );
+
+//     return view('user_list', ['data' => $paginatedData]);
+// }
+
 public function user_list(Request $request)
 {
-    $users = DB::table('users')
-    ->where('role', 'user')
-    ->select('id', 'name', 'available_balance', 'created_at')->get();
+    $perPage = 10;
+    $currentPage = LengthAwarePaginator::resolveCurrentPage();
+
+    $usersQuery = DB::table('users')
+        ->where('role', 'user')
+        ->select('id', 'name', 'available_balance', 'created_at');
+
+    $totalUsers = $usersQuery->count();
+
+    $users = $usersQuery
+        ->offset(($currentPage - 1) * $perPage)
+        ->limit($perPage)
+        ->get();
 
     $finalData = [];
 
-    foreach ($users as $index => $user) {
+    foreach ($users as $user) {
         $portfolio = DB::table('users_portfolio')
             ->where('user_id', $user->id)
             ->get();
@@ -581,9 +668,7 @@ public function user_list(Request $request)
         $currentValue = 0;
 
         foreach ($portfolio as $item) {
-            $latestPriceData = Cache::remember("stock_price_{$item->stock_id}", 300, function () use ($item) {
-                return $this->fetchLatestPrices($item->stock_id);
-            });
+            $latestPriceData = $this->fetchLatestPrices($item->stock_id);
 
             $latestPrice = isset($latestPriceData[$item->stock_id])
                 ? (float) $latestPriceData[$item->stock_id]
@@ -595,6 +680,7 @@ public function user_list(Request $request)
 
         $availableBalance = $user->available_balance ?? 0;
         $totalAmount = $availableBalance + $currentValue;
+        $pl_perc = ($totalAmount - 100000) / 100000 * 100;
 
         $finalData[] = [
             'id' => $user->id,
@@ -604,21 +690,17 @@ public function user_list(Request $request)
             'total_invest' => number_format($totalInvest, 0),
             'current_value' => number_format($currentValue, 0),
             'total_amount' => number_format($totalAmount, 0),
-            'total_amount_raw' => $totalAmount // for sorting
+            'pl_perc' => number_format($pl_perc, 1),
+            'total_amount_raw' => $totalAmount
         ];
     }
 
-    // Sort by total_amount descending
-    $collection = collect($finalData)->sortByDesc('total_amount_raw')->values();
-
-    // Manual pagination
-    $perPage = 10;
-    $currentPage = LengthAwarePaginator::resolveCurrentPage();
-    $pagedData = $collection->slice(($currentPage - 1) * $perPage, $perPage)->all();
+    // You can sort paginated data here if needed
+    $sortedData = collect($finalData)->sortByDesc('total_amount_raw')->values();
 
     $paginatedData = new LengthAwarePaginator(
-        $pagedData,
-        $collection->count(),
+        $sortedData,
+        $totalUsers,
         $perPage,
         $currentPage,
         ['path' => $request->url(), 'query' => $request->query()]
@@ -626,6 +708,8 @@ public function user_list(Request $request)
 
     return view('user_list', ['data' => $paginatedData]);
 }
+
+
 
 public function user_list_detail(Request $request, $id){
 
@@ -642,12 +726,12 @@ public function user_list_detail(Request $request, $id){
         $item->latest_price = Cache::remember("stock_price_{$item->stock_id}", 300, function () use ($item) {
             return $this->fetchLatestPrices($item->stock_id);
         });
+
     }
 
     // dd($users_portfolio_data, $users_data);
 
         return view ('user_list_detail',compact('users_data','users_portfolio_data'));
-
 
 }
 
@@ -680,11 +764,15 @@ public function recent_buy(Request $request)
         ->orderBy('users_portfolio.id', 'desc')
         ->paginate(10);
 
+    // foreach ($users_portfolio_data as $item) {
+    //     $item->latest_price = Cache::remember("stock_price_{$item->stock_id}", 1, function () use ($item) {
+    //         return $this->fetchLatestPrices($item->stock_id);
+    //     });
+    // }
+
     foreach ($users_portfolio_data as $item) {
-        $item->latest_price = Cache::remember("stock_price_{$item->stock_id}", 300, function () use ($item) {
-            return $this->fetchLatestPrices($item->stock_id);
-        });
-    }
+    $item->latest_price = $this->fetchLatestPrices($item->stock_id);
+  }
 
 
     return view('recent_buy', compact('users_portfolio_data'));
@@ -697,11 +785,13 @@ public function recent_sell(Request $request){
     ->select(
         'users_pl_reports.*',
         'users.name as user_name')
+    ->orderBy('users_pl_reports.id', 'desc')
     ->paginate(10);
 
   
     return view ('recent_sell',compact('data'));
     
 }
+
         
 }

@@ -37,7 +37,7 @@
                 </div> -->
                 <div class="mb-4">
                     <span class="text-sm text-white">Market Price:</span>
-                    <span id="market-price" class="text-green-600 font-semibold text-black">₹</span>
+                    <span id="market-price" class="text-green-600 font-semibold text-white">₹</span>
                 </div>
  
                 <!-- Quantity Input -->

@@ -141,6 +141,8 @@
                     <th>Total Invest</th>
                     <th>Current Value</th>
                     <th>Total Amount</th>
+                    <th>PL %</th>
+
                 </tr>
             </thead>
             <tbody>
@@ -159,6 +161,8 @@
         <td class="text-right">₹ {{ $item['total_invest'] }}</td>
         <td class="text-right">₹ {{ $item['current_value'] }}</td>
         <td class="text-right font-weight-bold text-success">₹ {{ $item['total_amount'] }}</td>
+<td class="text-right font-weight-bold {{ $item['pl_perc'] > 0 ? 'text-success' : 'text-danger' }}">₹ {{ $item['pl_perc'] }}</td>
+
     </tr>
 @empty
     <tr>

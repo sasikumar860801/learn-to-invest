@@ -82,6 +82,7 @@
                     <th>Total Sell</th>
                     <th>Buy Date</th>
                     <th>Sell Date</th>
+                    <th>Total Days</th>
                     <th>P/L</th>
                     <th>P/L %</th>
                 </tr>
@@ -114,18 +115,20 @@
                         </td>
 
                         <td>{{ $item->quantity }}</td>
-                        <td>₹ {{ number_format((float)$item->buy_price, 2) }}</td>
-                        <td>₹ {{ number_format((float)$item->sell_price, 2) }}</td>
-                        <td>₹ {{ number_format((float)$item->total_buy_price, 2) }}</td>
-                        <td>₹ {{ number_format((float)$item->total_sell_price, 2) }}</td>
+                        <td>₹{{ number_format((float)$item->buy_price,1) }}</td>
+                        <td>₹{{ number_format((float)$item->sell_price,1) }}</td>
+                        <td>₹{{ number_format((float)$item->total_buy_price,1) }}</td>
+                        <td>₹{{ number_format((float)$item->total_sell_price,1) }}</td>
                         <td>{{ \Carbon\Carbon::parse($item->buy_date)->format('d M Y') }}</td>
                         <td>{{ \Carbon\Carbon::parse($item->sell_date)->format('d M Y') }}</td>
 
-                        <td class="{{ $pl >= 0 ? 'text-success' : 'text-danger' }}">
-                            ₹ {{ number_format($pl, 2) }}
+<td>{{ abs(round(\Carbon\Carbon::parse($item->sell_date)->diffInDays(\Carbon\Carbon::parse($item->buy_date)))) }}</td>                        
+
+<td class="{{ $pl >= 0 ? 'text-success' : 'text-danger' }}">
+                            ₹{{ number_format($pl,1) }}
                         </td>
                         <td class="{{ $plPercent >= 0 ? 'text-success' : 'text-danger' }}">
-                            {{ number_format($plPercent, 2) }}%
+                            {{ number_format($plPercent,2) }}%
                         </td>
                     </tr>
 

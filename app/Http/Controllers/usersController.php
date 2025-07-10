@@ -244,6 +244,7 @@ public function pl_report()
     $user_id = Auth::id();
     $data= DB::table('users_pl_reports')
     ->where('user_id', $user_id)
+    ->orderBy('id', 'desc')
     ->get();
 
     // dd($data);

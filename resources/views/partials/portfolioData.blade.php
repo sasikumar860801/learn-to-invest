@@ -2,8 +2,9 @@
 
 @foreach($data as $item)
 <tr>
-<td class="serial-number">{{ $loop->index + 1 }}</td> <!-- Serial number -->
     <td class="stock-id" style="display: none">{{ $item->stock_id }}</td>
+    <td class="serial-number">{{ $loop->index + 1 }}</td> <!-- Serial number -->
+
     <td class="stock-details">
         <span class="sticky">{{ $item->stock_name }}</span><br>
         <span class="stock-quantity">{{ $item->quantity }} Shares</span>

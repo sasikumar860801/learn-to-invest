@@ -43,7 +43,6 @@ Route::middleware(['auth', 'role:admin'])->get('/admin/check', function () {
 
 
 
-
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/home',[finance::class,'index'])->name('index');
     Route::get('/cmp/{id}', [finance::class, 'cmp'])->name('cmp');

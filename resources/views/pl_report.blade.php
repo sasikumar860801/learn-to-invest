@@ -175,10 +175,6 @@
         </div>
     </div>
 
-
-
-
-
 <script>
 $(document).ready(function() {
 
@@ -201,8 +197,8 @@ $(document).ready(function() {
                     var row = '<tr>' +
                         '<td>' + (index + 1) + '</td>' +
                         '<td>' + item.stock_name + '</td>' +
-                        '<td>' + item.buy_date + '</td>' +
-                        '<td>' + item.sell_date + '</td>' +
+                        '<td>' + new Date(item.buy_date).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) + '</td>'+
+                        '<td>' + new Date(item.sell_date).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) + '</td>'+
                         '<td>' + item.quantity + '</td>' +
                         '<td>' + item.total_buy_price + '</td>' +
                         '<td>' + item.total_sell_price + '</td>' +
