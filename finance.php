@@ -722,16 +722,14 @@ public function user_list_detail(Request $request, $id){
         ->where('user_id', $user_id)
         ->paginate(10);
 
-    // foreach ($users_portfolio_data as $item) {
-    //     $item->latest_price = Cache::remember("stock_price_{$item->stock_id}", 300, function () use ($item) {
-    //         return $this->fetchLatestPrices($item->stock_id);
-    //     });
+    foreach ($users_portfolio_data as $item) {
+        $item->latest_price = Cache::remember("stock_price_{$item->stock_id}", 300, function () use ($item) {
+            return $this->fetchLatestPrices($item->stock_id);
+        });
 
-    // }
+    }
 
-foreach ($users_portfolio_data as $item) {
-    $item->latest_price = $this->fetchLatestPrices($item->stock_id);
-}
+    // dd($users_portfolio_data, $users_data);
 
         return view ('user_list_detail',compact('users_data','users_portfolio_data'));
 
