@@ -3,173 +3,267 @@
 @section('content')
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
+<style>
+
+    body::after {
+    content: '';
+    display: block;
+    height: 100px;
+    background-color: #1e1e1e;
+}
 
 
-<div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #121212 !important;
+    color: #ffffff !important;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
 
-    <div class="bg-gray-50 rounded-2xl shadow-xl p-6 sm:p-8">
+body > .main-content {
+    flex: 1;
+    background-color: #1e1e1e;
+}
+
+/* .main-content {
+    flex: 1;
+    background-color: #1e1e1e !important;
+    display: flex;
+    flex-direction: column;
+} */
+    .main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #1e1e1e !important;
+    min-height: 100vh;
+}
+
+    .bg-gray-50,
+    .bg-white {
+        background-color: #1e1e1e !important;
+    }
+
+    .text-gray-800,
+    .text-gray-700,
+    .text-gray-600,
+    .text-gray-500,
+    .text-gray-900 {
+        color: #ffffff !important;
+    }
+
+    .border-gray-300,
+    .border-gray-200 {
+        border-color: #444 !important;
+    }
+
+    input,
+    textarea,
+    select,
+    .form-control {
+        background-color: #2c2c2c !important;
+        color: #fff !important;
+        border-color: #555 !important;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+        color: #aaa !important;
+    }
+
+    .table {
+        color: #fff;
+    }
+
+    .table thead {
+        background-color: #222;
+    }
+
+    .table tbody tr {
+        background-color: #1a1a1a;
+    }
+
+    .table-bordered {
+        border-color: #444;
+    }
+
+    .modal-content {
+        background-color: #1e1e1e !important;
+        color: #fff !important;
+    }
+
+    .stock-item {
+        background-color: #2c2c2c;
+        color: #fff !important;
+    }
+
+    .stock-item:hover {
+        background-color: #444 !important;
+        color: #fff !important;
+    }
+
+    #stock-results {
+        background-color: #2c2c2c !important;
+        color: #fff !important;
+        border-color: #444 !important;
+    }
+
+
+</style>
+
+<div class="main-content">
+    <!-- All dashboard content here -->
+     <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="rounded-2xl shadow-xl p-6 sm:p-8 bg-gray-50">
 
         <div class="mb-6 text-center">
-            <h1 class="text-3xl font-bold text-gray-800">Welcome, {{ Auth::user()->name }} 👋</h1>
-            <p class="text-gray-600 mt-2">Manage your stock portfolio easily.</p>
+            <h1 class="text-3xl font-bold text-white">Welcome, {{ Auth::user()->name }} 👋</h1>
+            <p class="text-white mt-2">Manage your stock portfolio easily.</p>
         </div>
 
         <div class="mb-6 text-center">
-            <div class="text-sm text-gray-500 uppercase tracking-wide">Available Balance</div>
+            <div class="text-sm text-white uppercase tracking-wide">Available Balance</div>
             <div class="text-2xl font-semibold text-green-600 mt-1">₹ <span id="available_balance">{{ number_format($users_data->available_balance, 2) }}</span></div>
         </div>
 
         <!-- Stock Search -->
         <div class="relative">
-            <label for="stock-search" class="block text-gray-700 font-medium mb-1">Search Stock</label>
+            <label for="stock-search" class="block font-medium text-white mb-1">Search Stock</label>
             <input type="text" id="stock-search" placeholder="Type to search..." autocomplete="off"
-                   class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm" />
+                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm" />
             <div id="stock-results"
-                 class="absolute z-50 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg hidden max-h-60 overflow-y-auto"></div>
+                class="absolute z-50 mt-1 w-full border border-gray-300 rounded-md shadow-lg hidden max-h-60 overflow-y-auto"></div>
         </div>
 
         <!-- Selected Stock -->
         <div id="stock-section" class="mt-6 hidden transition-all duration-200 ease-in-out">
-            <div class="p-4 bg-grey-100 border border-gray-200 rounded-lg shadow-sm">
-                <!-- <div class="mb-2">
-                    <span class="text-sm text-white">Selected:</span>
-                    <span id="selected-stock-name" class="text-white font-medium text-blue-700"></span>
-                </div> -->
+            <div class="p-4 border border-gray-200 rounded-lg shadow-sm bg-gray-50">
                 <div class="mb-4">
                     <span class="text-sm text-white">Market Price:</span>
                     <span id="market-price" class="text-green-600 font-semibold text-white">₹</span>
                 </div>
- 
-                <!-- Quantity Input -->
-                <label for="quantity" class="block text-sm font-medium text-gray-700 mb-1">Enter Quantity</label>
-                <input type="number" id="quantity" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400" placeholder="e.g. 5" />
 
-                <!-- Total -->
+                <label for="quantity" class="block text-sm font-medium text-white mb-1">Enter Quantity</label>
+                <input type="number" id="quantity"
+                    class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400"
+                    placeholder="e.g. 5" />
+
                 <p class="mt-3 text-white text-base">Total Price: ₹<span id="total-price" class="font-bold text-green-600">0.00</span></p>
 
-                <!-- Buy Button -->
-             <button id="buy-button" class="mt-4 w-full bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                Buy Now
+                <button id="buy-button"
+                    class="mt-4 w-full bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled>
+                    Buy Now
                 </button>
             </div>
         </div>
     </div>
 </div>
 
+<br>
 
- @if($users_portfolio_data->count())
-
+@if($users_portfolio_data->count())
 <div class="table-responsive">
     <table class="table table-bordered table-dark table-hover text-center align-middle">
-        <thead class="thead-dark">
+        <thead>
             <tr>
+                <th class="px-6 py-3 text-left">S-No</th>
                 <th class="px-6 py-3 text-left">Stock</th>
-                    <th class="px-6 py-3 text-center">Qty</th>
-                      <th class="px-6 py-3 text-center">Buy Date</th>
-                    <th class="px-6 py-3 text-center">Buy Price</th>
-                    <th class="px-6 py-3 text-center">Total Invested</th>
-                    <th class="px-6 py-3 text-center">Current Value</th>
-                    <th class="px-6 py-3 text-center">P/L</th>
-                    <th class="px-6 py-3 text-center">P/L %</th>
-                    <th class="px-6 py-3 text-center">Action</th>
+                <th class="px-6 py-3 text-center">Qty</th>
+                <th class="px-6 py-3 text-center">Buy Date</th>
+                <th class="px-6 py-3 text-center">Buy Price</th>
+                <th class="px-6 py-3 text-center">Total Invested</th>
+                <th class="px-6 py-3 text-center">Current Value</th>
+                <th class="px-6 py-3 text-center">P/L</th>
+                <th class="px-6 py-3 text-center">P/L %</th>
+                <th class="px-6 py-3 text-center">Action</th>
             </tr>
         </thead>
-       <tbody>
-    @foreach ($users_portfolio_data as $portfolio)
-        @php
-            $latest_price = $portfolio->latest_price ?? 0;
-            $current_value = $latest_price * $portfolio->quantity;
-            $pl_amount = $current_value - $portfolio->total_price;
-            $pl_percent = $portfolio->total_price > 0 ? ($pl_amount / $portfolio->total_price) * 100 : 0;
-            $pl_color = $pl_amount >= 0 ? 'text-success' : 'text-danger';
-
-        @endphp
-        <tr class="hover:bg-gray-50 text-center">
-            <!-- <td class="px-6 py-4 text-left font-medium text-gray-900">{{ $portfolio->stock_name }}</td> -->
-             @php
-    $avgArray = json_decode($portfolio->avg ?? '[]', true);
-@endphp
-
-<td class="px-6 py-4 text-left font-medium text-gray-900">
-    @if(count($avgArray) > 1)
-        <a href="#" 
-           class="text-primary view-avg-link" 
-           data-avg='@json($avgArray)'
-           data-stock="{{ $portfolio->stock_name }}">
-            {{ $portfolio->stock_name }}
-        </a>
-    @else
-        {{ $portfolio->stock_name }}
-    @endif
-</td>
-
-            <td class="px-6 py-4">{{ $portfolio->quantity }}</td>
-            <td class="px-6 py-4">{{ date('d M Y', strtotime($portfolio->buy_date)) }}</td>
-            <td class="px-6 py-4">₹{{ number_format($portfolio->buy_price, 2) }}</td>
-            <td class="px-6 py-4">₹{{ number_format($portfolio->total_price, 2) }}</td>
-            <td class="px-6 py-4">₹{{ number_format($current_value, 2) }}</td>
-            <td class="px-6 py-4 {{ $pl_color }}">₹{{ number_format($pl_amount, 2) }}</td>
-            <td class="px-6 py-4 {{ $pl_color }}">{{ number_format($pl_percent, 2) }}%</td>
-            <td class="px-6 py-4">
-                <button 
-                    class="btn btn-sm btn-danger exit-stock-btn"
-                    data-stock-id="{{ $portfolio->stock_id }}"
-                    data-stock-name="{{ $portfolio->stock_name }}"
-                    data-quantity="{{ $portfolio->quantity }}"
-                >
-                    Exit Stock
-            </button>
-            </td>
-        </tr>
-    @endforeach
-</tbody>
-
-       
+        <tbody>
+            @foreach ($users_portfolio_data as $portfolio)
+                @php
+                    $latest_price = $portfolio->latest_price ?? 0;
+                    $current_value = $latest_price * $portfolio->quantity;
+                    $pl_amount = $current_value - $portfolio->total_price;
+                    $pl_percent = $portfolio->total_price > 0 ? ($pl_amount / $portfolio->total_price) * 100 : 0;
+                    $pl_color = $pl_amount >= 0 ? 'text-success' : 'text-danger';
+                    $avgArray = json_decode($portfolio->avg ?? '[]', true);
+                @endphp
+                <tr class="text-center">
+                    <td class="px-6 py-4 text-left font-medium text-white">{{ $loop->iteration }}</td>
+                    <td class="px-6 py-4 text-left font-medium text-white">
+                        @if(count($avgArray) > 1)
+                            <a href="#" class="text-primary view-avg-link" data-avg='@json($avgArray)' data-stock="{{ $portfolio->stock_name }}">
+                                {{ $portfolio->stock_name }}
+                            </a>
+                        @else
+                            {{ $portfolio->stock_name }}
+                        @endif
+                    </td>
+                    <td class="px-6 py-4">{{ $portfolio->quantity }}</td>
+                    <td class="px-6 py-4">{{ date('d M Y', strtotime($portfolio->buy_date)) }}</td>
+                    <td class="px-6 py-4">₹{{ number_format($portfolio->buy_price, 2) }}</td>
+                    <td class="px-6 py-4">₹{{ number_format($portfolio->total_price, 2) }}</td>
+                    <td class="px-6 py-4">₹{{ number_format($current_value, 2) }}</td>
+                    <td class="px-6 py-4 {{ $pl_color }}">₹{{ number_format($pl_amount, 2) }}</td>
+                    <td class="px-6 py-4 {{ $pl_color }}">{{ number_format($pl_percent, 2) }}%</td>
+                    <td class="px-6 py-4">
+                        <button class="btn btn-sm btn-danger exit-stock-btn"
+                            data-stock-id="{{ $portfolio->stock_id }}"
+                            data-stock-name="{{ $portfolio->stock_name }}"
+                            data-quantity="{{ $portfolio->quantity }}">
+                            Exit Stock
+                        </button>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
     </table>
 </div>
 @endif
- <div class="mt-6">
-    <div >
+
+<div class="mt-6">
+    <div>
         {{ $users_portfolio_data->links() }}
     </div>
 </div>
 
-<!-- Exit Stock Modal -->
-<div class="modal fade" id="exitStockModal" tabindex="-1" role="dialog" aria-labelledby="exitStockModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <form id="exitStockForm">
-      @csrf
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Exit Stock</h5>
-          <button type="button" class="close btn btn-sm btn-secondary" data-dismiss="modal" aria-label="Close">×</button>
-        </div>
-        <div class="modal-body">
-          <input type="hidden" id="exitStockId" name="stock_id">
-          <div class="form-group">
-            <label for="exitQuantity">Enter Quantity to Exit</label>
-            <input type="number" class="form-control" id="exitQuantity" name="quantity" min="1" required>
-            <small id="maxQtyHint" class="form-text text-muted"></small>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-danger">Exit</button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+</div>
 
-        </div>
+<!-- Exit Stock Modal -->
+<div class="modal fade" id="exitStockModal" tabindex="-1" aria-labelledby="exitStockLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title" id="exitStockLabel">Exit Stock</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-    </form>
+      <div class="modal-body">
+        <form id="exitStockForm">
+          <input type="hidden" id="exitStockId" name="stock_id" />
+          <div class="mb-3">
+            <label for="exitQuantity" class="form-label">Quantity to Exit</label>
+            <input type="number" class="form-control" id="exitQuantity" name="quantity" required min="1">
+            <div class="form-text text-white" id="maxQtyHint"></div>
+          </div>
+          <button type="submit" class="btn btn-danger">Confirm Exit</button>
+        </form>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- Avg History Modal -->
-
+<!-- Buy History Modal -->
 <div class="modal fade" id="avgHistoryModal" tabindex="-1" aria-labelledby="avgHistoryLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header border-secondary">
         <h5 class="modal-title" id="avgHistoryLabel">Buy History</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <div id="avgHistoryContent"></div>
@@ -178,7 +272,11 @@
   </div>
 </div>
 
+
+<div style="flex-grow: 1; background-color: #1e1e1e;"></div>
+
 @endsection
+
 
 @section('scripts')
 <!-- CSS -->

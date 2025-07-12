@@ -3,6 +3,50 @@
 @section('content')
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+        background-color: #121212 !important;
+        color: #ffffff !important;
+    }
+
+    .container {
+        min-height: 100vh;
+        background-color: #1e1e1e !important;
+    }
+
+    .table-dark thead th {
+        background-color: #222 !important;
+        color: #fff !important;
+    }
+
+    .table-bordered {
+        border-color: #444 !important;
+    }
+
+    .table tbody tr {
+        background-color: #1a1a1a !important;
+    }
+
+    .modal-content {
+        background-color: #1e1e1e !important;
+        color: #fff !important;
+    }
+
+    .modal-header {
+        border-bottom: 1px solid #444;
+    }
+
+    .btn-close-white {
+        filter: invert(1);
+    }
+
+    .text-black {
+        color: #fff !important;
+    }
+</style>
+
 <div class="container py-5">
     <h1 class="mb-4 text-white">P&L Report</h1>
 
@@ -11,6 +55,7 @@
             <table class="table table-dark table-hover table-bordered text-center align-middle">
                 <thead>
                     <tr>
+                        <th>S.No</th>
                         <th>Stock Name</th>
                         <th>Qty</th>
                         <th>Buy Price</th>
@@ -32,9 +77,10 @@
                             $plColor = $pl >= 0 ? 'text-success' : 'text-danger';
                         @endphp
                         <tr>
+                            <td>{{ $loop->iteration }}</td>
                             <td>
                                 @if(count($avgArray) > 1)
-                                    <a href="#" 
+                                    <a href="#"
                                        class="text-info view-avg-link fw-bold"
                                        data-avg='@json($avgArray)'
                                        data-stock="{{ $row->stock_name }}">
